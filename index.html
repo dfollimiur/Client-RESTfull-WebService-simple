@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client RESTfull WS</title>
+</head>
+
+<body>
+    <div>
+        <h1>Lista utenti</h1>
+        <ul id="persons"></ul>
+    </div>
+    <div>
+        <h2 id="person"></h2>
+        <div id="detail"></div>
+    </div>
+    <script>
+        
+        let endpoint = 'https://danilofolli.alwaysdata.net';
+        let persons = [];
+
+        // Generazione della lista
+        function getlist() {
+            fetch(endpoint + '/person')
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data)
+                    let person = document.getElementById('persons');
+                    data.forEach(element => {
+                        persons[element.id] = {
+                            "name": element.firstname, 
+                            "surname": element.lastname
+                        }
+                        el_li = document.createElement('li');
+                        el_li.innerHTML = element.id + ' - ' + element.firstname + ' ' + element.lastname;
+                        el_li.id = 'p' + element.id;
+                        el_li.onclick = function() { 
+                            getDetail(element.id)
+                        };
+                        person.appendChild(el_li);                       
+                    });
+                })
+                .catch(error => console.error(error));
+        }
+
+        // Generazione della scheda
+        function getDetail( id ) {
+            fetch( endpoint + '/person/' + id)
+                .then(response => response.json())
+                .then(data => {
+                    // console.log(data)
+                    // console.log(persons[data[0].firstparent_id].name)
+                    let detail = document.getElementById('detail');
+                    let person = document.getElementById('person');
+                     if(data[0].firstparent_id > 0 && data[0].secondparent_id > 0 ) { 
+                        person.innerHTML = 'Parenti di ' + data[0].firstname + ' ' + data[0].lastname
+                        var pp = persons[data[0].firstparent_id].name + ' ' + persons[data[0].firstparent_id].surname
+                        var sp = persons[data[0].secondparent_id].name + ' ' + persons[data[0].secondparent_id].surname
+                        detail.innerHTML = 'Primo parente: ' + pp + ' - secondo parente: ' + sp
+                    } else {
+                        person.innerHTML = 'Nessun parente'
+                        detail.innerHTML = ''
+                    }
+                })
+        }
+
+        // Avvio
+        getlist();
+
+    </script>
+</body>
+
+</html>

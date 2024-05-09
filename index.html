@@ -16,6 +16,16 @@
         <h2 id="person"></h2>
         <div id="detail"></div>
     </div>
+    <div>
+        <h2>Iserisci utente</h2>
+        <form id="formInsert">
+            <input type="text" name="firstname" id="firstname" placeholder="nome">
+            <input type="text" name="lastname" id="lastname" placeholder="cognome">
+            <button id="addButton">Salva</button>
+        </form>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.8/axios.min.js"></script>
     <script>
         
         let endpoint = 'https://danilofolli.alwaysdata.net';
@@ -65,6 +75,69 @@
                     }
                 })
         }
+
+        function generateSuccessHTMLOutput(response) {
+            return  '<h4>Result</h4>' + 
+                    '<h5>Status:</h5> ' + 
+                    '<pre>' + response.status + ' ' + response.statusText + '</pre>' +
+                    '<h5>Headers:</h5>' + 
+                    '<pre>' + JSON.stringify(response.headers, null, '\t') + '</pre>' + 
+                    '<h5>Data:</h5>' + 
+                    '<pre>' + JSON.stringify(response.data, null, '\t') + '</pre>'; 
+          }
+          function generateErrorHTMLOutput(error) {
+            return  '<h4>Result</h4>' + 
+                    '<h5>Message:</h5> ' + 
+                    '<pre>' + error.message + '</pre>' +
+                    '<h5>Status:</h5> ' + 
+                    '<pre>' + error.response.status + ' ' + error.response.statusText + '</pre>' +
+                    '<h5>Headers:</h5>' + 
+                    '<pre>' + JSON.stringify(error.response.headers, null, '\t') + '</pre>' + 
+                    '<h5>Data:</h5>' + 
+                    '<pre>' + JSON.stringify(error.response.data, null, '\t') + '</pre>'; 
+          }
+          
+        document.getElementById("addButton").addEventListener("click", function(e) {
+            
+            e.preventDefault();
+
+            const user = {
+                'firstname' : document.getElementById("firstname").value,
+                'lastname' : document.getElementById("lastname").value,
+            }
+            console.log(user);
+
+            // chiamata con vanilla javascript 
+            /**/ 
+            fetch( endpoint + '/person', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application.json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(user)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data)   
+                })           
+                .catch(error => {
+                    //handle error
+                });
+            /**/
+
+            // chiamata con libreria AXIOS
+            /*
+            axios.post( endpoint + '/person', user)
+              .then(function (response) {
+                // resultElement.innerHTML = generateSuccessHTMLOutput(response);
+                console.log(response) 
+              })
+              .catch(function (error) {
+                // resultElement.innerHTML = generateErrorHTMLOutput(error);
+              });
+            */
+        })
 
         // Avvio
         getlist();

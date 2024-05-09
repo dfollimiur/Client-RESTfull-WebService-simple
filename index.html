@@ -17,7 +17,7 @@
         <div id="detail"></div>
     </div>
     <div>
-        <h2>Iserisci utente</h2>
+        <h2>Inserisci utente</h2>
         <form id="formInsert">
             <input type="text" name="firstname" id="firstname" placeholder="nome">
             <input type="text" name="lastname" id="lastname" placeholder="cognome">
@@ -25,14 +25,15 @@
         </form>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.8/axios.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.8/axios.min.js"></script> -->
     <script>
         
         let endpoint = 'https://danilofolli.alwaysdata.net';
         let persons = [];
 
         // Generazione della lista
-        function getlist() {
+        function getList() {
+            persons = [];
             fetch(endpoint + '/person')
                 .then(response => response.json())
                 .then(data => {
@@ -76,26 +77,26 @@
                 })
         }
 
-        function generateSuccessHTMLOutput(response) {
-            return  '<h4>Result</h4>' + 
-                    '<h5>Status:</h5> ' + 
-                    '<pre>' + response.status + ' ' + response.statusText + '</pre>' +
-                    '<h5>Headers:</h5>' + 
-                    '<pre>' + JSON.stringify(response.headers, null, '\t') + '</pre>' + 
-                    '<h5>Data:</h5>' + 
-                    '<pre>' + JSON.stringify(response.data, null, '\t') + '</pre>'; 
-          }
-          function generateErrorHTMLOutput(error) {
-            return  '<h4>Result</h4>' + 
-                    '<h5>Message:</h5> ' + 
-                    '<pre>' + error.message + '</pre>' +
-                    '<h5>Status:</h5> ' + 
-                    '<pre>' + error.response.status + ' ' + error.response.statusText + '</pre>' +
-                    '<h5>Headers:</h5>' + 
-                    '<pre>' + JSON.stringify(error.response.headers, null, '\t') + '</pre>' + 
-                    '<h5>Data:</h5>' + 
-                    '<pre>' + JSON.stringify(error.response.data, null, '\t') + '</pre>'; 
-          }
+        // function generateSuccessHTMLOutput(response) {
+        //     return  '<h4>Result</h4>' + 
+        //             '<h5>Status:</h5> ' + 
+        //             '<pre>' + response.status + ' ' + response.statusText + '</pre>' +
+        //             '<h5>Headers:</h5>' + 
+        //             '<pre>' + JSON.stringify(response.headers, null, '\t') + '</pre>' + 
+        //             '<h5>Data:</h5>' + 
+        //             '<pre>' + JSON.stringify(response.data, null, '\t') + '</pre>'; 
+        //   }
+        //   function generateErrorHTMLOutput(error) {
+        //     return  '<h4>Result</h4>' + 
+        //             '<h5>Message:</h5> ' + 
+        //             '<pre>' + error.message + '</pre>' +
+        //             '<h5>Status:</h5> ' + 
+        //             '<pre>' + error.response.status + ' ' + error.response.statusText + '</pre>' +
+        //             '<h5>Headers:</h5>' + 
+        //             '<pre>' + JSON.stringify(error.response.headers, null, '\t') + '</pre>' + 
+        //             '<h5>Data:</h5>' + 
+        //             '<pre>' + JSON.stringify(error.response.data, null, '\t') + '</pre>'; 
+        //   }
           
         document.getElementById("addButton").addEventListener("click", function(e) {
             
@@ -110,6 +111,7 @@
             // chiamata con vanilla javascript 
             /**/ 
             fetch( endpoint + '/person', {
+                    mode: 'no-cors',
                     method: 'POST',
                     headers: {
                         'Accept': 'application.json',
@@ -119,7 +121,9 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data)   
+                    console.log('Dati restituiti da POST' + data); 
+                    getList();
+                    console.log('Fine metodo getlist');
                 })           
                 .catch(error => {
                     //handle error
@@ -140,7 +144,7 @@
         })
 
         // Avvio
-        getlist();
+        getList();
 
     </script>
 </body>

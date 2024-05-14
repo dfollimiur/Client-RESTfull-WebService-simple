@@ -5,6 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Client RESTfull WS</title>
+    <style>
+        .btn {
+            margin: 0 10px;
+        }
+    </style>
 </head>
 
 <body>
@@ -25,7 +30,6 @@
         </form>
     </div>
 
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.8/axios.min.js"></script> -->
     <script>
         
         let endpoint = 'https://danilofolli.alwaysdata.net';
@@ -39,17 +43,33 @@
                 .then(data => {
                     console.log(data)
                     let person = document.getElementById('persons');
+                    person.innerHTML='';
                     data.forEach(element => {
                         persons[element.id] = {
                             "name": element.firstname, 
                             "surname": element.lastname
                         }
                         el_li = document.createElement('li');
+
                         el_li.innerHTML = element.id + ' - ' + element.firstname + ' ' + element.lastname;
-                        el_li.id = 'p' + element.id;
-                        el_li.onclick = function() { 
-                            getDetail(element.id)
+
+                        el_b1 = document.createElement('button');
+                        el_b1.setAttribute("class", "btn");
+                        el_b1.onclick = function() { 
+                            viewParents(element.id)
                         };
+                        el_b1.innerHTML = "Show parents"
+
+                        el_b2 = document.createElement('button');
+                        el_b2.setAttribute("class", "btn");
+                        el_b2.onclick = function() { 
+                            deleteItem(element.id)
+                        };
+                        el_b2.innerHTML = "Delete"
+
+                        el_li.appendChild(el_b1);
+                        el_li.appendChild(el_b2);
+
                         person.appendChild(el_li);                       
                     });
                 })
@@ -57,12 +77,10 @@
         }
 
         // Generazione della scheda
-        function getDetail( id ) {
+        function viewParents( id ) {
             fetch( endpoint + '/person/' + id)
                 .then(response => response.json())
                 .then(data => {
-                    // console.log(data)
-                    // console.log(persons[data[0].firstparent_id].name)
                     let detail = document.getElementById('detail');
                     let person = document.getElementById('person');
                      if(data[0].firstparent_id > 0 && data[0].secondparent_id > 0 ) { 
@@ -77,27 +95,26 @@
                 })
         }
 
-        // function generateSuccessHTMLOutput(response) {
-        //     return  '<h4>Result</h4>' + 
-        //             '<h5>Status:</h5> ' + 
-        //             '<pre>' + response.status + ' ' + response.statusText + '</pre>' +
-        //             '<h5>Headers:</h5>' + 
-        //             '<pre>' + JSON.stringify(response.headers, null, '\t') + '</pre>' + 
-        //             '<h5>Data:</h5>' + 
-        //             '<pre>' + JSON.stringify(response.data, null, '\t') + '</pre>'; 
-        //   }
-        //   function generateErrorHTMLOutput(error) {
-        //     return  '<h4>Result</h4>' + 
-        //             '<h5>Message:</h5> ' + 
-        //             '<pre>' + error.message + '</pre>' +
-        //             '<h5>Status:</h5> ' + 
-        //             '<pre>' + error.response.status + ' ' + error.response.statusText + '</pre>' +
-        //             '<h5>Headers:</h5>' + 
-        //             '<pre>' + JSON.stringify(error.response.headers, null, '\t') + '</pre>' + 
-        //             '<h5>Data:</h5>' + 
-        //             '<pre>' + JSON.stringify(error.response.data, null, '\t') + '</pre>'; 
-        //   }
-          
+        function deleteItem( id ) {
+            fetch( endpoint + '/person/' + id, { 
+                mode: 'no-cors', 
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Dati restituiti da DELETE' + data); 
+            })           
+            .catch(error => {
+                //handle error
+                console.log('Errore rilavato:' + error);
+            })
+            .finally(() => {
+                // run this code no matter what the previous outcomes
+                console.log('Eseguo comunque la pulizia dei campi imput e il refresh della lista')
+                getList();
+            });
+        }
+
         document.getElementById("addButton").addEventListener("click", function(e) {
             
             e.preventDefault();
@@ -109,7 +126,7 @@
             console.log(user);
 
             // chiamata con vanilla javascript 
-            /**/ 
+            /**/
             fetch( endpoint + '/person', {
                     mode: 'no-cors',
                     method: 'POST',
@@ -134,19 +151,7 @@
                     document.getElementById("lastname").value = '';
                     getList();
                 });
-            /**/
 
-            // chiamata con libreria AXIOS
-            /*
-            axios.post( endpoint + '/person', user)
-              .then(function (response) {
-                // resultElement.innerHTML = generateSuccessHTMLOutput(response);
-                console.log(response) 
-              })
-              .catch(function (error) {
-                // resultElement.innerHTML = generateErrorHTMLOutput(error);
-              });
-            */
         })
 
         // Avvio

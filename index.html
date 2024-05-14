@@ -122,11 +122,17 @@
                 .then(response => response.json())
                 .then(data => {
                     console.log('Dati restituiti da POST' + data); 
-                    getList();
-                    console.log('Fine metodo getlist');
                 })           
                 .catch(error => {
                     //handle error
+                    console.log('Errore rilavato:' + error);
+                })
+                .finally(() => {
+                    // run this code no matter what the previous outcomes
+                    console.log('Eseguo comunque la pulizia dei campi imput e il refresh della lista')
+                    document.getElementById("firstname").value = '';
+                    document.getElementById("lastname").value = '';
+                    getList();
                 });
             /**/
 
